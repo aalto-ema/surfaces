@@ -68,6 +68,8 @@ def test_export_preview_and_unit_conversion(window, qtbot):
     assert dialog.settings().transparent
     assert dialog.settings().format == "SVG"
     dialog.reject()
+    qtbot.waitUntil(lambda: dialog.tasks.thread is None, timeout=10000)
+    assert not dialog.isVisible()
 
 
 def test_generation_changes_site_identity_and_undo_recovers_it(window, qtbot):

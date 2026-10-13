@@ -378,6 +378,11 @@ def compound_slab(spec: StructureSpec) -> tuple[Atoms, dict]:
     upper = (spec.layers + spec.termination) * period
     epsilon = period * 1e-9
     heights = extended.positions[:, 2]
+    # ASE's periodic scaled-coordinate conversion can wrap a tiny negative z
+    # at the bottom onto the top face, depending on the platform's linear solver.
+    # Both faces represent the same site; normalize the upper boundary to zero
+    # before selecting the half-open stoichiometric window.
+    heights[np.abs(heights - extended.cell[2, 2]) < epsilon] = 0.0
     keep = (heights >= lower - epsilon) & (heights < upper - epsilon)
     oriented = extended[keep]
     if len(oriented) != len(lattice) * spec.layers:

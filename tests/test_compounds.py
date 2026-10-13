@@ -166,6 +166,26 @@ def test_cut_phases_within_one_plane_gap_are_equivalent_after_centering():
     np.testing.assert_array_equal(first.numbers, second.numbers)
 
 
+def test_cut_normalizes_periodic_upper_boundary_roundoff(monkeypatch):
+    from surfaces import compounds
+
+    spec = replace(EXAMPLES[0].spec(), miller=(1, 1, 1), nx=1, ny=1, layers=2)
+    reference = build_project(spec).atoms
+    ase_surface = compounds.surface
+
+    def wrapped_surface(*args, **kwargs):
+        atoms = ase_surface(*args, **kwargs)
+        bottom = np.flatnonzero(np.isclose(atoms.positions[:, 2], 0, atol=1e-9))
+        assert len(bottom)
+        atoms.positions[bottom[0], 2] = atoms.cell[2, 2] - 1e-12
+        return atoms
+
+    monkeypatch.setattr(compounds, "surface", wrapped_surface)
+    result = build_project(spec).atoms
+    np.testing.assert_array_equal(result.numbers, reference.numbers)
+    np.testing.assert_allclose(result.positions, reference.positions, atol=1e-9)
+
+
 def test_invalid_compound_recipe_rejected_on_load(tmp_path):
     import json
 

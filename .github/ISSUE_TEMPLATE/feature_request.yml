@@ -1,0 +1,16 @@
+name: Feature request
+description: Propose a new workflow, crystal model, or figure improvement.
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What would this help you do?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Include an example workflow or scientific reference when suggesting a crystal model.
+    validations:
+      required: true

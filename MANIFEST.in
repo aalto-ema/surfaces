@@ -1,0 +1,14 @@
+include README.md LICENSE AGENTS.md CONTRIBUTING.md CHANGELOG.md
+include pyproject.toml run_app.py .gitattributes .gitignore
+recursive-include src/surfaces *.py
+recursive-include docs *.md *.png
+recursive-include examples *.surfaces.json
+recursive-include tests *.py
+recursive-include tools *.py
+recursive-include .github *.yml *.yaml *.md
+prune .venv
+prune .pytest_cache
+prune .ruff_cache
+prune build
+prune dist
+global-exclude __pycache__ *.py[cod] .DS_Store

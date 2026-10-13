@@ -1,0 +1,594 @@
+{
+  "schema_version": 2,
+  "title": "PtO · cooperite (0 0 1)",
+  "atoms": {
+    "numbers": [
+      78,
+      78,
+      8,
+      8,
+      78,
+      78,
+      8,
+      8,
+      78,
+      78,
+      8,
+      8,
+      78,
+      78,
+      8,
+      8,
+      78,
+      78,
+      8,
+      8,
+      78,
+      78,
+      8,
+      8,
+      78,
+      78,
+      8,
+      8,
+      78,
+      78,
+      8,
+      8
+    ],
+    "positions": [
+      [
+        0.0,
+        1.52,
+        8.0
+      ],
+      [
+        1.52,
+        0.0,
+        10.67
+      ],
+      [
+        0.0,
+        0.0,
+        9.335
+      ],
+      [
+        0.0,
+        0.0,
+        12.004999999999999
+      ],
+      [
+        0.0,
+        1.52,
+        13.34
+      ],
+      [
+        1.52,
+        0.0,
+        16.009999999999998
+      ],
+      [
+        0.0,
+        0.0,
+        14.675
+      ],
+      [
+        0.0,
+        0.0,
+        17.345
+      ],
+      [
+        0.0,
+        4.5600000000000005,
+        8.0
+      ],
+      [
+        1.52,
+        3.04,
+        10.67
+      ],
+      [
+        0.0,
+        3.04,
+        9.335
+      ],
+      [
+        0.0,
+        3.04,
+        12.004999999999999
+      ],
+      [
+        0.0,
+        4.5600000000000005,
+        13.34
+      ],
+      [
+        1.52,
+        3.04,
+        16.009999999999998
+      ],
+      [
+        0.0,
+        3.04,
+        14.675
+      ],
+      [
+        0.0,
+        3.04,
+        17.345
+      ],
+      [
+        3.04,
+        1.52,
+        8.0
+      ],
+      [
+        4.5600000000000005,
+        0.0,
+        10.67
+      ],
+      [
+        3.04,
+        0.0,
+        9.335
+      ],
+      [
+        3.04,
+        0.0,
+        12.004999999999999
+      ],
+      [
+        3.04,
+        1.52,
+        13.34
+      ],
+      [
+        4.5600000000000005,
+        0.0,
+        16.009999999999998
+      ],
+      [
+        3.04,
+        0.0,
+        14.675
+      ],
+      [
+        3.04,
+        0.0,
+        17.345
+      ],
+      [
+        3.04,
+        4.5600000000000005,
+        8.0
+      ],
+      [
+        4.5600000000000005,
+        3.04,
+        10.67
+      ],
+      [
+        3.04,
+        3.04,
+        9.335
+      ],
+      [
+        3.04,
+        3.04,
+        12.004999999999999
+      ],
+      [
+        3.04,
+        4.5600000000000005,
+        13.34
+      ],
+      [
+        4.5600000000000005,
+        3.04,
+        16.009999999999998
+      ],
+      [
+        3.04,
+        3.04,
+        14.675
+      ],
+      [
+        3.04,
+        3.04,
+        17.345
+      ]
+    ],
+    "cell": [
+      [
+        6.08,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        6.08,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        25.345
+      ]
+    ],
+    "pbc": [
+      true,
+      true,
+      false
+    ],
+    "site_ids": [
+      "5892b644be95:1",
+      "5892b644be95:2",
+      "5892b644be95:3",
+      "5892b644be95:4",
+      "5892b644be95:5",
+      "5892b644be95:6",
+      "5892b644be95:7",
+      "5892b644be95:8",
+      "5892b644be95:9",
+      "5892b644be95:10",
+      "5892b644be95:11",
+      "5892b644be95:12",
+      "5892b644be95:13",
+      "5892b644be95:14",
+      "5892b644be95:15",
+      "5892b644be95:16",
+      "5892b644be95:17",
+      "5892b644be95:18",
+      "5892b644be95:19",
+      "5892b644be95:20",
+      "5892b644be95:21",
+      "5892b644be95:22",
+      "5892b644be95:23",
+      "5892b644be95:24",
+      "5892b644be95:25",
+      "5892b644be95:26",
+      "5892b644be95:27",
+      "5892b644be95:28",
+      "5892b644be95:29",
+      "5892b644be95:30",
+      "5892b644be95:31",
+      "5892b644be95:32"
+    ]
+  },
+  "original": {
+    "numbers": [
+      78,
+      78,
+      8,
+      8,
+      78,
+      78,
+      8,
+      8,
+      78,
+      78,
+      8,
+      8,
+      78,
+      78,
+      8,
+      8,
+      78,
+      78,
+      8,
+      8,
+      78,
+      78,
+      8,
+      8,
+      78,
+      78,
+      8,
+      8,
+      78,
+      78,
+      8,
+      8
+    ],
+    "positions": [
+      [
+        0.0,
+        1.52,
+        8.0
+      ],
+      [
+        1.52,
+        0.0,
+        10.67
+      ],
+      [
+        0.0,
+        0.0,
+        9.335
+      ],
+      [
+        0.0,
+        0.0,
+        12.004999999999999
+      ],
+      [
+        0.0,
+        1.52,
+        13.34
+      ],
+      [
+        1.52,
+        0.0,
+        16.009999999999998
+      ],
+      [
+        0.0,
+        0.0,
+        14.675
+      ],
+      [
+        0.0,
+        0.0,
+        17.345
+      ],
+      [
+        0.0,
+        4.5600000000000005,
+        8.0
+      ],
+      [
+        1.52,
+        3.04,
+        10.67
+      ],
+      [
+        0.0,
+        3.04,
+        9.335
+      ],
+      [
+        0.0,
+        3.04,
+        12.004999999999999
+      ],
+      [
+        0.0,
+        4.5600000000000005,
+        13.34
+      ],
+      [
+        1.52,
+        3.04,
+        16.009999999999998
+      ],
+      [
+        0.0,
+        3.04,
+        14.675
+      ],
+      [
+        0.0,
+        3.04,
+        17.345
+      ],
+      [
+        3.04,
+        1.52,
+        8.0
+      ],
+      [
+        4.5600000000000005,
+        0.0,
+        10.67
+      ],
+      [
+        3.04,
+        0.0,
+        9.335
+      ],
+      [
+        3.04,
+        0.0,
+        12.004999999999999
+      ],
+      [
+        3.04,
+        1.52,
+        13.34
+      ],
+      [
+        4.5600000000000005,
+        0.0,
+        16.009999999999998
+      ],
+      [
+        3.04,
+        0.0,
+        14.675
+      ],
+      [
+        3.04,
+        0.0,
+        17.345
+      ],
+      [
+        3.04,
+        4.5600000000000005,
+        8.0
+      ],
+      [
+        4.5600000000000005,
+        3.04,
+        10.67
+      ],
+      [
+        3.04,
+        3.04,
+        9.335
+      ],
+      [
+        3.04,
+        3.04,
+        12.004999999999999
+      ],
+      [
+        3.04,
+        4.5600000000000005,
+        13.34
+      ],
+      [
+        4.5600000000000005,
+        3.04,
+        16.009999999999998
+      ],
+      [
+        3.04,
+        3.04,
+        14.675
+      ],
+      [
+        3.04,
+        3.04,
+        17.345
+      ]
+    ],
+    "cell": [
+      [
+        6.08,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        6.08,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        25.345
+      ]
+    ],
+    "pbc": [
+      true,
+      true,
+      false
+    ],
+    "site_ids": [
+      "5892b644be95:1",
+      "5892b644be95:2",
+      "5892b644be95:3",
+      "5892b644be95:4",
+      "5892b644be95:5",
+      "5892b644be95:6",
+      "5892b644be95:7",
+      "5892b644be95:8",
+      "5892b644be95:9",
+      "5892b644be95:10",
+      "5892b644be95:11",
+      "5892b644be95:12",
+      "5892b644be95:13",
+      "5892b644be95:14",
+      "5892b644be95:15",
+      "5892b644be95:16",
+      "5892b644be95:17",
+      "5892b644be95:18",
+      "5892b644be95:19",
+      "5892b644be95:20",
+      "5892b644be95:21",
+      "5892b644be95:22",
+      "5892b644be95:23",
+      "5892b644be95:24",
+      "5892b644be95:25",
+      "5892b644be95:26",
+      "5892b644be95:27",
+      "5892b644be95:28",
+      "5892b644be95:29",
+      "5892b644be95:30",
+      "5892b644be95:31",
+      "5892b644be95:32"
+    ]
+  },
+  "spec": {
+    "element": "PtO",
+    "crystal": "cooperite",
+    "miller": [
+      0,
+      0,
+      1
+    ],
+    "a": 3.04,
+    "c": 5.34,
+    "nx": 2,
+    "ny": 2,
+    "layers": 2,
+    "vacuum": 8,
+    "lattice_source": "PtO starting a=3.04 Å, c=5.34 Å from experimental values discussed by Li et al. (2020); ideal, unrelaxed surface cut.",
+    "internal_u": 0.25,
+    "inversion": 0.0,
+    "seed": 42,
+    "termination": 0.0
+  },
+  "provenance": {
+    "compound_model_version": 1,
+    "compound_formula": "PtO",
+    "bulk_formula_ratio": {
+      "Pt": 1,
+      "O": 1
+    },
+    "prototype": "cooperite",
+    "prototype_description": "Tetragonal P4₂/mmc (131); a and c; PtO-type basis",
+    "structure_limits": "Ideal prototype, fully occupied sites; no charge, magnetism, relaxation, reconstruction, or surface-stability prediction.",
+    "builder_reference": "https://docs.ase-lib.org/ase/spacegroup/spacegroup.html",
+    "catalog_model_reference": "https://www.frontiersin.org/journals/chemistry/articles/10.3389/fchem.2020.00704/full",
+    "basis_reference": "https://www.frontiersin.org/journals/chemistry/articles/10.3389/fchem.2020.00704/full",
+    "bulk_atoms": 4,
+    "builder": "ASE bulk/spacegroup crystal → surface → complete cut-cell repeats",
+    "cell_convention": "Tetragonal P4₂/mmc (131); a and c; PtO-type basis; Miller indices refer to that bulk cell; layers count full oriented cells, not atomic planes",
+    "cut_phase": 0.0,
+    "termination_limits": "Phase shifts a stoichiometric cut window through an ASE stack. Stoichiometry is preserved; polar/asymmetric terminations are possible and are not electrostatically assessed.",
+    "slab_formula_ratio": {
+      "Pt": 1,
+      "O": 1
+    },
+    "lattice_source": "PtO starting a=3.04 Å, c=5.34 Å from experimental values discussed by Li et al. (2020); ideal, unrelaxed surface cut.",
+    "normal": "oriented cell a × b",
+    "vacuum": "Å per side",
+    "relaxed": false,
+    "atomic_planes": 8
+  },
+  "operations": [],
+  "camera": {
+    "azimuth": -32.0,
+    "elevation": 35,
+    "projection": "Orthographic",
+    "zoom": 1.0,
+    "pan_x": 0.0,
+    "pan_y": 0.0
+  },
+  "appearance": {
+    "radius_scale": 0.85,
+    "colors": {},
+    "radii": {},
+    "background": "#ffffff",
+    "cell": false,
+    "axes": false,
+    "legend": true,
+    "outlines": true,
+    "shading": true,
+    "copies_x": 1,
+    "copies_y": 1
+  },
+  "export": {
+    "format": "PNG",
+    "width": 1800,
+    "height": 1400,
+    "unit": "px",
+    "dpi": 300,
+    "transparent": false,
+    "margin": 8.0,
+    "legend": true,
+    "axes": false
+  },
+  "export_presets": {}
+}

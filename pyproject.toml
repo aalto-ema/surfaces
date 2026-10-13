@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "surfaces-app"
+version = "0.1.0"
+description = "Crystalline surface exploration and scientific figures"
+readme = 'README.md'
+license = 'MIT'
+license-files = ['LICENSE']
+keywords = ['ASE', 'crystallography', 'surfaces', 'materials', 'visualization', 'PySide6']
+classifiers = [
+    'Development Status :: 3 - Alpha',
+    'Programming Language :: Python :: 3',
+    'Topic :: Scientific/Engineering :: Chemistry',
+    'Topic :: Scientific/Engineering :: Physics',
+    'Topic :: Scientific/Engineering :: Visualization',
+]
+requires-python = ">=3.11"
+dependencies = [
+    "ase>=3.23,<4",
+    "numpy>=1.26,<3",
+    "PySide6>=6.7,<7",
+    "Pillow>=10,<13",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "pytest-qt>=4.4,<5", "ruff>=0.6,<1", "pypdf>=5,<7"]
+
+[project.scripts]
+surfaces = "surfaces.app:main"
+
+[project.urls]
+Repository = "https://github.com/aalto-ema/surfaces"
+Issues = "https://github.com/aalto-ema/surfaces/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

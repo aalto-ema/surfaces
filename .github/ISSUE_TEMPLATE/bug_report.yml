@@ -1,0 +1,30 @@
+name: Bug report
+description: Report a reproducible problem with geometry, the interface, or exports.
+labels: []
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the expected and actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How can we reproduce it?
+      description: Include formula/element, prototype, Miller indices, lattice values, layers, and seed when relevant.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system, Python version, PySide6/ASE versions, and app version or commit.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots, errors, or a minimal example
+      description: Remove private file paths, confidential structures, and identifying data before attaching files.

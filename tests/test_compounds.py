@@ -175,7 +175,11 @@ def test_cut_normalizes_periodic_upper_boundary_roundoff(monkeypatch):
 
     def wrapped_surface(*args, **kwargs):
         atoms = ase_surface(*args, **kwargs)
-        bottom = np.flatnonzero(np.isclose(atoms.positions[:, 2], 0, atol=1e-9))
+        heights = atoms.positions[:, 2]
+        bottom = np.flatnonzero(
+            np.isclose(heights, 0, atol=1e-9)
+            | np.isclose(heights, atoms.cell[2, 2], atol=1e-9, rtol=0)
+        )
         assert len(bottom)
         atoms.positions[bottom[0], 2] = atoms.cell[2, 2] - 1e-12
         return atoms

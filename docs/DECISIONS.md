@@ -79,3 +79,11 @@ Do not publish packages or create remote repositories without user authorization
   to exercise backward compatibility.
 - The Generate action stays outside the scrolling construction form so compound
   parameters do not push the primary action out of view.
+# Python 3.11 Qt compatibility
+
+The first hosted Linux run with PySide6 6.12.0 aborted during interpreter
+finalization with `none_dealloc`, after completing the Qt tests. Python 3.13
+on macOS and Windows completed shutdown normally. Temporarily constrain PySide6
+to releases before 6.12 on Python 3.11; newer Python versions retain the existing
+range. Keep Python 3.11 and the full Qt suite in CI to verify this workaround.
+Revisit the constraint when a corrected binding release is verified on Python 3.11.

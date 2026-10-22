@@ -182,6 +182,9 @@ class MainWindow(QMainWindow):
             ("Vacuum · each side", self.vacuum),
         ]:
             form.addRow(label, widget)
+        particles = QPushButton("Nanoparticle studio…")
+        particles.clicked.connect(self.particle_dialog)
+        layout.insertWidget(2, particles)
         examples = QPushButton("Compound examples and limits…")
         examples.clicked.connect(self.compound_examples)
         layout.insertWidget(2, examples)
@@ -265,6 +268,14 @@ class MainWindow(QMainWindow):
                 "bulk-cell repeats; inspect the resulting plane count in Details."
             )
 
+    def particle_dialog(self):
+        from surfaces.particle_ui import ParticleDialog
+
+        dialog = ParticleDialog(self)
+        if dialog.exec() and dialog.project is not None:
+            self.replace_generated(dialog.project)
+        dialog.deleteLater()
+
     def compound_examples(self):
         dialog = CompoundExamplesDialog(self)
         if dialog.exec() and dialog.selected_example:
@@ -346,7 +357,9 @@ class MainWindow(QMainWindow):
 
     def replace_generated(self, project):
         self.record()
+        representation = project.appearance.render_style
         project.appearance = copy.deepcopy(self.project.appearance)
+        project.appearance.render_style = representation if project.mesh is not None else "atoms"
         project.export = copy.deepcopy(self.project.export)
         project.export_presets = copy.deepcopy(self.project.export_presets)
         if (
@@ -440,9 +453,13 @@ class MainWindow(QMainWindow):
         self.viewport.update()
         self.title_label.setText(self.project.title)
         source = "ASE ideal lattice" if self.project.spec else "Imported geometry"
-        self.subtitle.setText(
-            f"{source} · covalent radii · {self.project.atoms.get_chemical_formula()}"
-        )
+        if self.project.spec and self.project.spec.particle:
+            source = "Finite nanoparticle · unrelaxed"
+        convention = "continuum surface" if not len(self.project.atoms) else "covalent radii"
+        formula = self.project.atoms.get_chemical_formula()
+        if not formula and self.project.mesh is not None:
+            formula = self.project.mesh.element
+        self.subtitle.setText(f"{source} · {convention} · {formula}")
         self.projection.blockSignals(True)
         self.projection.setCurrentText(self.project.camera.projection)
         self.projection.blockSignals(False)
@@ -457,6 +474,15 @@ class MainWindow(QMainWindow):
         self.selection_changed(self.viewport.selected)
         self.update_title()
         self.composition_panel.refresh()
+        self.tabs.widget(1).setEnabled(bool(len(self.project.atoms)))
+        if not len(self.project.atoms):
+            self.selection_label.setText(
+                "Continuum surface · no atoms generated. Rebuild with ASE atoms for site editing."
+            )
+            self.statusBar().showMessage(
+                f"Continuum morphology · {len(self.project.mesh.faces):,} triangles "
+                "· no atom count implied"
+            )
         self.appearance_panel.refresh()
         self.sync_structure_form()
 
@@ -472,6 +498,11 @@ class MainWindow(QMainWindow):
             )
             return
         self.fill_structure_controls(spec)
+        if spec.particle is not None:
+            self.reference_note.setText(
+                "Finite nanoparticle. Reopen Nanoparticle studio to edit its saved recipe; "
+                "Generate surface below creates a new slab."
+            )
 
     def fill_structure_controls(self, spec):
         controls = (

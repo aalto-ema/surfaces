@@ -2,10 +2,43 @@
 
 from dataclasses import dataclass, field
 
+import numpy as np
 from ase import Atoms
 
 MAX_PHYSICAL_ATOMS = 20_000
 MAX_DISPLAY_ATOMS = 40_000
+
+
+@dataclass
+class ParticleSpec:
+    shape: str = "cube"
+    shells: int = 4
+    width: float = 24.0
+    length: float = 60.0
+    thickness: float = 10.0
+    axis: str = "001"
+    twist: float = 120.0
+    gap_depth: float = 0.28
+    gap_width: float = 0.10
+    groove_angle: float = 35.0
+    ridge_height: float = 0.28
+    ridge_width: float = 0.35
+    cap_fraction: float = 0.14
+    handedness: int = 1
+    crossed_ridges: bool = False
+    atomistic: bool = True
+    mesh_resolution: int = 48
+    target_atoms: int = 1000
+    rounding: str = "closest"
+    energy_unit: str = "relative"
+    energy_source: str = "Illustrative ratios; replace with verified surface energies"
+    illustrative: bool = True
+    facets: list[dict] = field(
+        default_factory=lambda: [
+            {"miller": [1, 0, 0], "layers": 6, "energy": 1.0},
+            {"miller": [1, 1, 1], "layers": 4, "energy": 0.9},
+        ]
+    )
 
 
 @dataclass
@@ -24,6 +57,7 @@ class StructureSpec:
     inversion: float = 0.0
     seed: int = 42
     termination: float = 0.0
+    particle: ParticleSpec | None = None
 
 
 @dataclass
@@ -38,6 +72,7 @@ class Camera:
 
 @dataclass
 class Appearance:
+    render_style: str = "atoms"
     radius_scale: float = 0.85
     colors: dict[str, str] = field(default_factory=dict)
     radii: dict[str, float] = field(default_factory=dict)
@@ -65,6 +100,13 @@ class ExportSettings:
 
 
 @dataclass
+class SurfaceMesh:
+    vertices: np.ndarray
+    faces: np.ndarray
+    element: str
+
+
+@dataclass
 class Project:
     atoms: Atoms
     original: Atoms
@@ -76,3 +118,4 @@ class Project:
     export: ExportSettings = field(default_factory=ExportSettings)
     export_presets: dict[str, dict] = field(default_factory=dict)
     title: str = "Pt · FCC (100)"
+    mesh: SurfaceMesh | None = None

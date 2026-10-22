@@ -78,7 +78,7 @@ class ExportDialog(QDialog):
         outer.addWidget(
             heading(
                 "Drawn from the same scene and camera. PNG/TIFF are antialiased; "
-                "PDF/SVG retain vector spheres and annotations.",
+                "PDF/SVG retain vector atoms or surface triangles.",
                 True,
             )
         )

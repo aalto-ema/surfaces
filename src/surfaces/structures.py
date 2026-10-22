@@ -84,6 +84,12 @@ def validate_atoms(atoms: Atoms) -> None:
 
 
 def validate_spec(spec: StructureSpec) -> None:
+    if spec.particle is not None:
+        from surfaces.particles import validate_particle
+
+        validate_particle(spec)
+        return
+
     from surfaces.compounds import PROTOTYPES, parse_formula, validate_compound_spec
 
     if spec.crystal in PROTOTYPES:
@@ -123,6 +129,10 @@ def build_project(spec: StructureSpec) -> Project:
     from surfaces.compounds import PROTOTYPES, compound_slab
 
     validate_spec(spec)
+    if spec.particle is not None:
+        from surfaces.particles import build_particle
+
+        return build_particle(spec)
     if spec.crystal in PROTOTYPES:
         atoms, provenance = compound_slab(spec)
         assign_ids(atoms)

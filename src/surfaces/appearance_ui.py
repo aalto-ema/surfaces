@@ -24,6 +24,9 @@ class AppearancePanel:
             "ASE covalent radii are the default visual convention. Override individual "
             "radii and colors without changing the lattice.",
         )
+        self.representation = QComboBox()
+        self.representation.addItems(["Atoms", "Solid surface"])
+        form.addRow("Representation", self.representation)
         self.scale = decimal(0.85, 0.1, 3, " ×", 2)
         form.addRow("Radius display scale", self.scale)
         self.background = QComboBox()
@@ -86,6 +89,9 @@ class AppearancePanel:
         from ase.data import atomic_numbers, covalent_radii
 
         appearance = self.window.project.appearance
+        project = self.window.project
+        self.representation.setCurrentIndex(1 if appearance.render_style == "surface" else 0)
+        self.representation.setEnabled(project.mesh is not None and bool(len(project.atoms)))
         self.scale.setValue(appearance.radius_scale)
         for widget, value in [
             (self.cell, appearance.cell),
@@ -95,6 +101,8 @@ class AppearancePanel:
             (self.shading, appearance.shading),
         ]:
             widget.setChecked(value)
+        self.copies_x.setEnabled(bool(self.window.project.atoms.pbc[0]))
+        self.copies_y.setEnabled(bool(self.window.project.atoms.pbc[1]))
         self.copies_x.setValue(appearance.copies_x)
         self.copies_y.setValue(appearance.copies_y)
         self.background.blockSignals(True)
@@ -103,6 +111,8 @@ class AppearancePanel:
         self.background.blockSignals(False)
         self.background_color = appearance.background
         symbols = sorted(set(self.window.project.atoms.get_chemical_symbols()))
+        if self.window.project.mesh is not None:
+            symbols = sorted(set(symbols) | {self.window.project.mesh.element})
         self.table.setRowCount(len(symbols))
         for row, symbol in enumerate(symbols):
             item = QTableWidgetItem(symbol)
@@ -148,6 +158,7 @@ class AppearancePanel:
         self.error.clear()
         self.window.record()
         appearance = project.appearance
+        appearance.render_style = "surface" if self.representation.currentIndex() == 1 else "atoms"
         appearance.radius_scale = self.scale.value()
         appearance.background = self.background_color
         appearance.cell = self.cell.isChecked()

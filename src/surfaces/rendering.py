@@ -67,6 +67,8 @@ def basis(project: Project) -> np.ndarray:
 
 def legend_layout(project: Project, width: float, height: float):
     symbols = sorted(set(project.atoms.get_chemical_symbols()))
+    if project.mesh is not None and project.appearance.render_style == "surface":
+        symbols = [project.mesh.element]
     columns = max(1, int((width - 32) // 72))
     rows = math.ceil(len(symbols) / columns)
     footer = min(rows * 28 + 12, height * 0.4)
@@ -162,8 +164,14 @@ def draw_scene(
     painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
     if not transparent:
         painter.fillRect(QRectF(0, 0, width, height), QColor(project.appearance.background))
-    atoms, cell = project_scene(project, width, height, margin, legend)
-    if project.appearance.cell:
+    if project.mesh is not None and project.appearance.render_style == "surface":
+        from surfaces.surface_rendering import draw_surface
+
+        draw_surface(painter, project, width, height, margin, legend)
+        atoms, cell = [], np.zeros((8, 2))
+    else:
+        atoms, cell = project_scene(project, width, height, margin, legend)
+    if project.appearance.cell and atoms:
         painter.setPen(QPen(QColor("#99a6b6"), 1.2, Qt.PenStyle.DashLine))
         for a in range(8):
             for bit in (1, 2, 4):

@@ -232,3 +232,76 @@ def test_formula_without_crystal_model_gets_actionable_error(window):
     assert "compound needs a crystal prototype" in window.structure_error.text().lower()
     assert not window.busy
     assert set(window.project.atoms.get_chemical_symbols()) == {"Pt"}
+
+
+def test_particle_studio_preview_use_undo_and_restore_recipe(window, qtbot):
+    from surfaces.particle_ui import ParticleDialog
+
+    original = window.project.atoms.copy()
+    dialog = ParticleDialog(window)
+    qtbot.addWidget(dialog)
+    dialog.show()
+    qtbot.waitUntil(lambda: dialog.tasks.thread is None, timeout=10000)
+    assert dialog.use_button.isEnabled()
+    assert "{100}" in dialog.note.text()
+    assert not dialog.project.atoms.pbc.any()
+    dialog.shape.setCurrentIndex(dialog.shape.findData("triangle"))
+    assert dialog.axis.currentText() == "111"
+    assert not dialog.use_button.isEnabled()
+    dialog.build_preview()
+    assert not dialog.editor.isEnabled()
+    qtbot.waitUntil(lambda: dialog.tasks.thread is None, timeout=10000)
+    assert dialog.use_button.isEnabled()
+    dialog.accept()
+    window.replace_generated(dialog.project)
+    assert window.project.spec.particle.shape == "triangle"
+    assert window.project.appearance.copies_x == window.project.appearance.copies_y == 1
+    reopened = ParticleDialog(window)
+    qtbot.addWidget(reopened)
+    qtbot.waitUntil(lambda: reopened.tasks.thread is None, timeout=10000)
+    assert reopened.recipe() == window.project.spec
+    reopened.reject()
+    window.undo()
+    np.testing.assert_array_equal(window.project.atoms.positions, original.positions)
+    window.redo()
+    assert window.project.spec.particle.shape == "triangle"
+
+
+def test_particle_studio_error_and_deferred_close(window, qtbot, monkeypatch):
+    import threading
+
+    from surfaces import particle_ui
+
+    gate = threading.Event()
+    original = particle_ui.build_project
+
+    def delayed(spec):
+        gate.wait(3)
+        return original(spec)
+
+    monkeypatch.setattr(particle_ui, "build_project", delayed)
+    dialog = particle_ui.ParticleDialog(window)
+    qtbot.addWidget(dialog)
+    dialog.show()
+    assert dialog.tasks.thread is not None
+    dialog.reject()
+    assert dialog.dismiss_requested
+    assert dialog.isVisible()
+    gate.set()
+    qtbot.waitUntil(lambda: dialog.tasks.thread is None, timeout=10000)
+    assert not dialog.isVisible()
+
+
+def test_particle_wulff_invalid_input_is_inline(window, qtbot):
+    from surfaces.particle_ui import ParticleDialog
+
+    dialog = ParticleDialog(window)
+    qtbot.addWidget(dialog)
+    qtbot.waitUntil(lambda: dialog.tasks.thread is None, timeout=10000)
+    dialog.shape.setCurrentIndex(dialog.shape.findData("wulff"))
+    dialog.energy_source.clear()
+    dialog.build_preview()
+    assert "energy source" in dialog.error.text()
+    assert not dialog.use_button.isEnabled()
+    assert dialog.tasks.thread is None
+    dialog.reject()

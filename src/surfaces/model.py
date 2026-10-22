@@ -9,6 +9,28 @@ MAX_DISPLAY_ATOMS = 40_000
 
 
 @dataclass
+class ParticleSpec:
+    shape: str = "cube"
+    shells: int = 4
+    width: float = 24.0
+    length: float = 60.0
+    thickness: float = 10.0
+    axis: str = "001"
+    twist: float = 120.0
+    target_atoms: int = 1000
+    rounding: str = "closest"
+    energy_unit: str = "relative"
+    energy_source: str = "Illustrative ratios; replace with verified surface energies"
+    illustrative: bool = True
+    facets: list[dict] = field(
+        default_factory=lambda: [
+            {"miller": [1, 0, 0], "layers": 6, "energy": 1.0},
+            {"miller": [1, 1, 1], "layers": 4, "energy": 0.9},
+        ]
+    )
+
+
+@dataclass
 class StructureSpec:
     element: str = "Pt"
     crystal: str = "fcc"
@@ -24,6 +46,7 @@ class StructureSpec:
     inversion: float = 0.0
     seed: int = 42
     termination: float = 0.0
+    particle: ParticleSpec | None = None
 
 
 @dataclass

@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- Nanoparticle studio with 13 ASE-backed facet/envelope modes, including Wulff,
+  nanorods, triangular/hexagonal plates, twisted rods and helicoidal ribbons.
+- Explicit facet, orientation, energy-source, handedness and geometry-model limits;
+  asynchronous preview with achieved counts, dimensions and minimum separation.
+- Schema 3 particle recipes with schema 1/2 compatibility; finite-particle alloy,
+  undo/redo and vector/raster figure workflows.
+- Three Au example projects, reproducible gallery and studio screenshot.
+
 ## 0.1.0 — Initial public source release
 
 - PySide6 desktop workspace and ASE surface construction for FCC, BCC, HCP, and

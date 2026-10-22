@@ -16,12 +16,13 @@ from surfaces.model import (
     Appearance,
     Camera,
     ExportSettings,
+    ParticleSpec,
     Project,
     StructureSpec,
 )
 from surfaces.structures import validate_atoms, validate_element, validate_spec
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 
 def atomic_write(path: str | Path, writer) -> None:
@@ -134,6 +135,10 @@ def validate_display(project: Project) -> None:
     for n in (appearance.copies_x, appearance.copies_y):
         if type(n) is not int or not 1 <= n <= 5:
             raise ValueError("Display copy counts must be integers between 1 and 5.")
+    if (appearance.copies_x > 1 and not project.atoms.pbc[0]) or (
+        appearance.copies_y > 1 and not project.atoms.pbc[1]
+    ):
+        raise ValueError("Display copies require periodicity along the copied cell direction.")
     if len(project.atoms) * appearance.copies_x * appearance.copies_y > MAX_DISPLAY_ATOMS:
         raise ValueError(f"Project exceeds {MAX_DISPLAY_ATOMS:,} displayed atoms; reduce copies.")
     if not isinstance(appearance.colors, dict) or not isinstance(appearance.radii, dict):
@@ -209,10 +214,10 @@ def save_project(project: Project, path: str | Path) -> None:
 def from_data(data: dict) -> Project:
     if not isinstance(data, dict) or type(data.get("schema_version")) is not int:
         raise ValueError("This is not a Surfaces project.")
-    if data["schema_version"] not in (1, SCHEMA_VERSION):
+    if data["schema_version"] not in (1, 2, SCHEMA_VERSION):
         raise ValueError(
             f"Unsupported project version {data['schema_version']}. "
-            "This app supports versions 1 and 2."
+            "This app supports versions 1, 2 and 3."
         )
     try:
         atoms, original = atoms_from_data(data["atoms"]), atoms_from_data(data["original"])
@@ -226,6 +231,10 @@ def from_data(data: dict) -> Project:
             raise ValueError("Species edits must preserve original geometry and periodicity.")
         spec = record(StructureSpec, data["spec"]) if data.get("spec") else None
         if spec:
+            if spec.particle is not None:
+                if data["schema_version"] < 3:
+                    raise ValueError("Nanoparticle recipes require project schema 3.")
+                spec.particle = record(ParticleSpec, spec.particle)
             if data["schema_version"] == 1 and spec.crystal not in ("fcc", "bcc", "hcp"):
                 raise ValueError("Version 1 projects cannot contain compound recipes.")
             if (

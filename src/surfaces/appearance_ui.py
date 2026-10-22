@@ -95,6 +95,8 @@ class AppearancePanel:
             (self.shading, appearance.shading),
         ]:
             widget.setChecked(value)
+        self.copies_x.setEnabled(bool(self.window.project.atoms.pbc[0]))
+        self.copies_y.setEnabled(bool(self.window.project.atoms.pbc[1]))
         self.copies_x.setValue(appearance.copies_x)
         self.copies_y.setValue(appearance.copies_y)
         self.background.blockSignals(True)

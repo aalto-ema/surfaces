@@ -118,3 +118,21 @@ Schema 2 saves these construction fields and realized geometry. Schema 1 element
 projects migrate in memory through dataclass defaults, preserving atom identities,
 geometry, species, and view state. Saving writes schema 2. Recipes are validated
 through the shared `validate_spec` path; loading never regenerates a compound or alloy.
+
+## Finite particle extension and schema 3
+
+`ParticleSpec` is an optional nested field of `StructureSpec`. A missing/null field
+keeps the existing slab path. `particles.py` validates independent particle inputs,
+uses fresh bounded ASE cluster factories for facet and Wulff builders, and cuts
+analytic envelopes from ASE cubic bulk lattices. Twisted rods deform coordinates;
+helicoidal ribbons select undeformed lattice sites. Candidate and final atom limits
+apply before/after construction. SciPy cKDTree measures minimum separation without
+quadratic pair storage; severe twist overlaps are rejected. Frames and assumptions
+are explicit provenance. All particle output is finite with all-axis padding.
+
+`particle_ui.py` owns the recipe editor and copied preview state. Worker completion
+controls acceptance; edits invalidate previews and close requests defer until worker
+shutdown. MainWindow records acceptance as one undoable replacement and disables
+periodic display copies for nonperiodic structures. Preview camera changes do not
+mutate the source project. Schema 3 deserializes the nested particle record, validates
+it, and preserves realized coordinates; schemas 1 and 2 remain readable.

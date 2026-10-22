@@ -2,17 +2,21 @@
 
 Explore crystalline material surfaces and create scientific figures in a PySide6
 desktop app built on [ASE](https://docs.ase-lib.org/). Build elemental slabs,
-assign alloy compositions, and construct compounds from explicit crystal prototypes.
+create finite nanoparticles, assign alloy compositions, and construct compounds from explicit crystal prototypes.
 Style the atoms and camera, then export PNG, TIFF, PDF, or SVG figures.
 
 [Installation](#installation) · [Screenshots](#screenshots) ·
 [Examples](#example-projects) · [Compound guide](docs/COMPOUNDS.md) ·
-[Contributing](CONTRIBUTING.md)
+[Nanoparticle guide](docs/NANOPARTICLES.md) · [Contributing](CONTRIBUTING.md)
 
 ## Features
 
 - **Surface construction:** FCC, BCC, HCP, and generic three-index Miller cuts;
   editable lattice parameters, in-plane repetitions, thickness, and vacuum.
+- **Nanoparticle studio:** cubes with {100} faces, octahedra, cuboctahedra,
+  custom facets and Wulff constructions; spheres, ellipsoids, rods, triangular/hexagonal
+  plates, twisted rods and lattice-cut helicoidal ribbons. Preview counts and sizes
+  before use. Chiral shapes are explicit, unrelaxed geometry models.
 - **Composition editing:** single elements, reproducible random alloys, selected
   sites, and layer-by-layer assignments, with exact integer counts and undo/redo.
 - **Compound models:** nine explicit prototypes and 14 searchable examples,
@@ -75,6 +79,15 @@ editable internal coordinate, cation occupation, and cut phase.
 The screenshots show the real app using the committed example projects. They can
 be regenerated with [the capture script](tools/capture_screenshots.py).
 
+### Nanoparticles and chiral geometry
+
+The studio previews finite ASE particles, including a twisted Au nanorod shown here.
+See the [shape gallery, facet conventions and model limits](docs/NANOPARTICLES.md).
+
+![Nanoparticle studio showing a twisted Au nanorod](docs/images/nanoparticle-studio.png)
+
+Regenerate particle screenshots and examples with [this script](tools/capture_particles.py).
+
 ## First workflow
 
 1. Start with the default Pt FCC (100) slab or edit the Structure recipe, then Generate.
@@ -91,6 +104,14 @@ choose **Use example**, inspect the parameters, and Generate. A compound require
 formula **and** a crystal prototype; assigning oxide ratios on a metal lattice does
 not construct an oxide phase.
 
+For nanoparticles, open **Structure → Nanoparticle studio…**, choose the parent
+crystal and shape, build a preview, then **Use nanoparticle**. An Au FCC cube has
+{100} faces; an octahedron has {111} faces. Wulff energies must be supplied with a
+source; defaults are illustrative. Twisted rods strain a lattice, while helicoidal
+ribbons cut an undeformed lattice. These constructions do not predict growth or
+relaxed chiral structures. The [nanoparticle guide](docs/NANOPARTICLES.md) explains
+all 13 modes, dimensions, orientation and handedness.
+
 ## Example projects
 
 Use **Open** in the app to load these files:
@@ -102,6 +123,9 @@ Use **Open** in the app to load these files:
 | Pt–Au layered surface | [pt-au-layered.surfaces.json](examples/pt-au-layered.surfaces.json) |
 | Tetragonal PtO (001) | [pto001.surfaces.json](examples/pto001.surfaces.json) |
 | Inverse-spinel NiFe2O4 (001) | [nife2o4-001-inverse.surfaces.json](examples/nife2o4-001-inverse.surfaces.json) |
+| Au cube with {100} faces | [au-cube.surfaces.json](examples/au-cube.surfaces.json) |
+| Twisted Au nanorod | [au-twisted-rod.surfaces.json](examples/au-twisted-rod.surfaces.json) |
+| Wulff Au particle (illustrative energies) | [au-wulff.surfaces.json](examples/au-wulff.surfaces.json) |
 
 See [Compound examples and limits](docs/COMPOUNDS.md) for the complete catalog,
 formula syntax, prototype conventions, starting parameters, and termination rules.

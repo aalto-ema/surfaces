@@ -43,3 +43,13 @@ Text and line weights need deliberate physical-size handling in publication expo
 - PNG/TIFF render cleanly on light and dark backgrounds when transparent.
 - PDF/SVG dimensions, text, outlines, and vector content survive reopening.
 - Export preview matches the saved framing and optional annotations.
+
+## Particle studio
+
+The studio uses a scrollable recipe panel beside the shared viewport. Shape-specific
+controls, units and scientific conventions are visible beside the inputs. A pinned
+action row provides Build preview / Cancel / Use nanoparticle; acceptance is enabled
+only for a current successful preview. The summary gives achieved size and atom
+count, including target versus achieved Wulff counts. Preview worker activity disables
+recipe editing without blocking camera inspection. Errors are inline; successful
+status uses the muted text color. Closing during work defers until safe shutdown.

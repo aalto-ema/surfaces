@@ -182,6 +182,9 @@ class MainWindow(QMainWindow):
             ("Vacuum · each side", self.vacuum),
         ]:
             form.addRow(label, widget)
+        particles = QPushButton("Nanoparticle studio…")
+        particles.clicked.connect(self.particle_dialog)
+        layout.insertWidget(2, particles)
         examples = QPushButton("Compound examples and limits…")
         examples.clicked.connect(self.compound_examples)
         layout.insertWidget(2, examples)
@@ -264,6 +267,14 @@ class MainWindow(QMainWindow):
                 "Low-index builders count atomic planes. Generic cuts count "
                 "bulk-cell repeats; inspect the resulting plane count in Details."
             )
+
+    def particle_dialog(self):
+        from surfaces.particle_ui import ParticleDialog
+
+        dialog = ParticleDialog(self)
+        if dialog.exec() and dialog.project is not None:
+            self.replace_generated(dialog.project)
+        dialog.deleteLater()
 
     def compound_examples(self):
         dialog = CompoundExamplesDialog(self)
@@ -440,6 +451,8 @@ class MainWindow(QMainWindow):
         self.viewport.update()
         self.title_label.setText(self.project.title)
         source = "ASE ideal lattice" if self.project.spec else "Imported geometry"
+        if self.project.spec and self.project.spec.particle:
+            source = "Finite nanoparticle · unrelaxed"
         self.subtitle.setText(
             f"{source} · covalent radii · {self.project.atoms.get_chemical_formula()}"
         )
@@ -472,6 +485,11 @@ class MainWindow(QMainWindow):
             )
             return
         self.fill_structure_controls(spec)
+        if spec.particle is not None:
+            self.reference_note.setText(
+                "Finite nanoparticle. Reopen Nanoparticle studio to edit its saved recipe; "
+                "Generate surface below creates a new slab."
+            )
 
     def fill_structure_controls(self, spec):
         controls = (

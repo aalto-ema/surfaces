@@ -123,3 +123,14 @@ order, formal charges, relaxation, reconstruction, and fractional occupancies ar
 outside this geometry/figure workflow. Prepared fully occupied slabs can be imported
 for other phases and terminations. Existing selection, composition, save/load, undo,
 appearance, and figure exports work on the realized compound atoms.
+
+## Nanoparticle extension — 2026-10-22
+
+The Structure panel opens a nanoparticle studio with asynchronous preview, counts,
+actual spans, minimum separation, and an explicit use action. Thirteen modes cover
+ASE facet/Wulff clusters and geometric spheres, ellipsoids, rods, plates, twisted
+rods and lattice-cut helicoidal ribbons. Elemental FCC/BCC/SC parents are supported;
+compound/twinned particles are not synthesized. Wulff energies are supplied with
+sources and an illustrative flag. Finite particles reuse composition, undo, picking,
+appearance and figure export; periodic display copies are disabled. Version 3 saves
+recipes and realized coordinates. See [Nanoparticle conventions and limits](NANOPARTICLES.md).

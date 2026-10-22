@@ -211,7 +211,7 @@ def test_legacy_project_save_upgrades_schema_without_changing_atoms(tmp_path):
     before = load_project(source)
     path = tmp_path / "upgraded.surfaces.json"
     save_project(before, path)
-    assert json.loads(path.read_text())["schema_version"] == 3
+    assert json.loads(path.read_text())["schema_version"] == 4
     after = load_project(path)
     np.testing.assert_array_equal(before.atoms.numbers, after.atoms.numbers)
     np.testing.assert_array_equal(before.atoms.positions, after.atoms.positions)

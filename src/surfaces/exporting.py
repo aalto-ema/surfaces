@@ -100,7 +100,11 @@ def export_figure(project: Project, settings: ExportSettings, path: str | Path) 
             generator.setViewBox(QRect(0, 0, dimensions.width_px, dimensions.height_px))
             generator.setResolution(settings.dpi)
             generator.setTitle(project.title)
-            generator.setDescription("ASE structure · vector spheres · covalent radii")
+            generator.setDescription(
+                "Vector surface triangles · reference-inspired morphology"
+                if project.mesh is not None and project.appearance.render_style == "surface"
+                else "ASE structure · vector spheres · covalent radii"
+            )
             paint_device(generator, project, settings, dimensions.width_px, dimensions.height_px)
             # Explicit physical dimensions avoid conversion rounding in the SVG device.
             tree = ET.parse(target)

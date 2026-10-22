@@ -136,3 +136,20 @@ shutdown. MainWindow records acceptance as one undoable replacement and disables
 periodic display copies for nonperiodic structures. Preview camera changes do not
 mutate the source project. Schema 3 deserializes the nested particle record, validates
 it, and preserves realized coordinates; schemas 1 and 2 remain readable.
+
+## Solid chiral morphology extension — 2026-10-22
+
+`morphology.py` defines normalized implicit envelopes, the proper cubic rotation
+orbit, optional bounded ASE lattice filling, marching-cubes meshes and validation.
+`surface_rendering.py` projects and shades triangles through the same camera/frame
+and QPainter devices as atom figures; PDF/SVG retain vector triangles. Backface
+culling and triangle depth sorting approximate visibility for concave surfaces.
+No screenshot or hidden raster image is embedded in vector outputs.
+
+`Project.mesh` optionally stores vertices, indexed triangular faces and a material
+element. `Appearance.render_style` selects atoms or the solid surface. Continuum-only
+projects explicitly store empty ASE structures and no atom count; composition and
+atom picking are unavailable. Schema 4 validates/persists the mesh, and only permits
+empty structures in a surface-backed project. Loading never rebuilds the mesh or
+fills atoms. Schemas 1–3 still load. scikit-image is used for established marching
+cubes extraction rather than implementing a meshing algorithm by hand.

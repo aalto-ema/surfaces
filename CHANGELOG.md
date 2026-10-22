@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Reference-inspired 432 grooved cubic morphology and fourfold ridged nanorods,
+  including mirror partners and a mirror-symmetric crossed-ridge option.
+- Shared vector surface rendering, optional undeformed ASE filling, and explicit
+  continuum-only geometry for larger particles without fake atom counts.
+- Schema 4 saves validated meshes and representation settings; schemas 1–3 remain readable.
+- Chiral controls, reproducible surface gallery, references and geometry/symmetry tests.
+
+
 - Nanoparticle studio with 13 ASE-backed facet/envelope modes, including Wulff,
   nanorods, triangular/hexagonal plates, twisted rods and helicoidal ribbons.
 - Explicit facet, orientation, energy-source, handedness and geometry-model limits;

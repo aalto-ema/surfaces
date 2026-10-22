@@ -357,7 +357,9 @@ class MainWindow(QMainWindow):
 
     def replace_generated(self, project):
         self.record()
+        representation = project.appearance.render_style
         project.appearance = copy.deepcopy(self.project.appearance)
+        project.appearance.render_style = representation if project.mesh is not None else "atoms"
         project.export = copy.deepcopy(self.project.export)
         project.export_presets = copy.deepcopy(self.project.export_presets)
         if (
@@ -453,9 +455,11 @@ class MainWindow(QMainWindow):
         source = "ASE ideal lattice" if self.project.spec else "Imported geometry"
         if self.project.spec and self.project.spec.particle:
             source = "Finite nanoparticle · unrelaxed"
-        self.subtitle.setText(
-            f"{source} · covalent radii · {self.project.atoms.get_chemical_formula()}"
-        )
+        convention = "continuum surface" if not len(self.project.atoms) else "covalent radii"
+        formula = self.project.atoms.get_chemical_formula()
+        if not formula and self.project.mesh is not None:
+            formula = self.project.mesh.element
+        self.subtitle.setText(f"{source} · {convention} · {formula}")
         self.projection.blockSignals(True)
         self.projection.setCurrentText(self.project.camera.projection)
         self.projection.blockSignals(False)
@@ -470,6 +474,15 @@ class MainWindow(QMainWindow):
         self.selection_changed(self.viewport.selected)
         self.update_title()
         self.composition_panel.refresh()
+        self.tabs.widget(1).setEnabled(bool(len(self.project.atoms)))
+        if not len(self.project.atoms):
+            self.selection_label.setText(
+                "Continuum surface · no atoms generated. Rebuild with ASE atoms for site editing."
+            )
+            self.statusBar().showMessage(
+                f"Continuum morphology · {len(self.project.mesh.faces):,} triangles "
+                "· no atom count implied"
+            )
         self.appearance_panel.refresh()
         self.sync_structure_form()
 

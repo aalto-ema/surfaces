@@ -19,10 +19,11 @@ from surfaces.model import (
     ParticleSpec,
     Project,
     StructureSpec,
+    SurfaceMesh,
 )
 from surfaces.structures import validate_atoms, validate_element, validate_spec
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 
 def atomic_write(path: str | Path, writer) -> None:
@@ -48,7 +49,7 @@ def atom_data(atoms: Atoms) -> dict:
     }
 
 
-def atoms_from_data(data: dict) -> Atoms:
+def atoms_from_data(data: dict, *, allow_empty=False) -> Atoms:
     if not isinstance(data, dict) or set(data) != {
         "numbers",
         "positions",
@@ -58,7 +59,10 @@ def atoms_from_data(data: dict) -> Atoms:
     }:
         raise ValueError("Invalid structure record.")
     numbers = data["numbers"]
-    if not isinstance(numbers, list) or not 1 <= len(numbers) <= MAX_PHYSICAL_ATOMS:
+    if (
+        not isinstance(numbers, list)
+        or not (0 if allow_empty else 1) <= len(numbers) <= MAX_PHYSICAL_ATOMS
+    ):
         raise ValueError(f"Project needs 1–{MAX_PHYSICAL_ATOMS:,} atoms.")
     if any(type(n) is not int or not 1 <= n <= 118 for n in numbers):
         raise ValueError("Atomic numbers must be valid integers.")
@@ -69,9 +73,13 @@ def atoms_from_data(data: dict) -> Atoms:
     ):
         raise ValueError("Periodicity must contain three booleans.")
     positions = np.asarray(data["positions"], dtype=float)
+    if allow_empty and len(numbers) == 0 and positions.shape == (0,):
+        positions = positions.reshape(0, 3)
     cell = np.asarray(data["cell"], dtype=float)
     if positions.shape != (len(numbers), 3) or cell.shape != (3, 3):
         raise ValueError("Invalid position or cell dimensions.")
+    if not np.isfinite(positions).all() or not np.isfinite(cell).all():
+        raise ValueError("Positions and cell must be finite.")
     ids = data["site_ids"]
     if (
         not isinstance(ids, list)
@@ -81,7 +89,8 @@ def atoms_from_data(data: dict) -> Atoms:
         raise ValueError("Invalid site identity record.")
     atoms = Atoms(numbers=numbers, positions=positions, cell=cell, pbc=data["pbc"])
     atoms.set_array("site_ids", np.asarray(ids))
-    validate_atoms(atoms)
+    if len(atoms) or not allow_empty:
+        validate_atoms(atoms)
     return atoms
 
 
@@ -121,6 +130,18 @@ def validate_display(project: Project) -> None:
     import re
 
     camera, appearance = project.camera, project.appearance
+    if appearance.render_style not in ("atoms", "surface"):
+        raise ValueError("Unknown rendering representation.")
+    if appearance.render_style == "surface" and project.mesh is None:
+        raise ValueError("Solid surface rendering needs a surface mesh.")
+    if not len(project.atoms) and (project.mesh is None or appearance.render_style != "surface"):
+        raise ValueError("A continuum-only project requires solid surface rendering.")
+    if project.mesh is not None:
+        from surfaces.morphology import validate_mesh
+
+        validate_mesh(project.mesh)
+        if project.atoms.pbc.any():
+            raise ValueError("Morphology surfaces require a finite, nonperiodic structure.")
     finite_range(camera.azimuth, -1e9, 1e9, "Azimuth")
     finite_range(camera.elevation, -90, 90, "Elevation")
     finite_range(camera.zoom, 0.15, 8, "Zoom")
@@ -164,11 +185,19 @@ def to_data(project: Project) -> dict:
     validate_display(project)
     if project.spec:
         validate_spec(project.spec)
-    validate_atoms(project.atoms)
-    validate_atoms(project.original)
+    if len(project.atoms) or project.mesh is None:
+        validate_atoms(project.atoms)
+        validate_atoms(project.original)
     validate_operations(project.operations, set(map(str, project.atoms.arrays["site_ids"])))
     return {
         "schema_version": SCHEMA_VERSION,
+        "mesh": None
+        if project.mesh is None
+        else {
+            "vertices": project.mesh.vertices.tolist(),
+            "faces": project.mesh.faces.tolist(),
+            "element": project.mesh.element,
+        },
         "title": project.title,
         "atoms": atom_data(project.atoms),
         "original": atom_data(project.original),
@@ -214,13 +243,26 @@ def save_project(project: Project, path: str | Path) -> None:
 def from_data(data: dict) -> Project:
     if not isinstance(data, dict) or type(data.get("schema_version")) is not int:
         raise ValueError("This is not a Surfaces project.")
-    if data["schema_version"] not in (1, 2, SCHEMA_VERSION):
+    if data["schema_version"] not in (1, 2, 3, SCHEMA_VERSION):
         raise ValueError(
-            f"Unsupported project version {data['schema_version']}. "
-            "This app supports versions 1, 2 and 3."
+            f"Unsupported project version {data['schema_version']}. This app supports versions 1–4."
         )
     try:
-        atoms, original = atoms_from_data(data["atoms"]), atoms_from_data(data["original"])
+        mesh = None
+        if data.get("mesh") is not None:
+            if data["schema_version"] < 4:
+                raise ValueError("Surface meshes require project schema 4.")
+            raw = data["mesh"]
+            if not isinstance(raw, dict) or set(raw) != {"vertices", "faces", "element"}:
+                raise ValueError("Invalid mesh record.")
+            vertices = np.asarray(raw["vertices"], dtype=float)
+            faces = np.asarray(raw["faces"])
+            mesh = SurfaceMesh(vertices, faces, raw["element"])
+            from surfaces.morphology import validate_mesh
+
+            validate_mesh(mesh)
+        atoms = atoms_from_data(data["atoms"], allow_empty=mesh is not None)
+        original = atoms_from_data(data["original"], allow_empty=mesh is not None)
         if list(atoms.arrays["site_ids"]) != list(original.arrays["site_ids"]):
             raise ValueError("Original and edited structures must have matching ordered site IDs.")
         if (
@@ -269,6 +311,7 @@ def from_data(data: dict) -> Project:
             record(ExportSettings, data.get("export", {})),
             data.get("export_presets", {}),
             data["title"],
+            mesh,
         )
         validate_operations(project.operations, set(map(str, atoms.arrays["site_ids"])))
         validate_display(project)

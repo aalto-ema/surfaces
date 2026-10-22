@@ -110,9 +110,9 @@ both signs, atom counts and connectivity before using a model in a scientific cl
 - Particles have **no periodicity**. The bounding box has padding on all six sides;
   periodic display copies are disabled. Composition layers are Cartesian z planes
   of the particle, not concentric shells or facets.
-- Version **3** projects store the recipe, energies/source/illustrative flag, parent
-  frame, realized geometry, species and stable IDs. Versions 1 and 2 still load;
-  opening never regenerates geometry. Saving upgrades to version 3.
+- Version **4** projects store the recipe, energies/source/illustrative flag, parent
+  frame, realized geometry, species and stable IDs. Versions 1, 2 and 3 still load;
+  opening never regenerates geometry. Saving upgrades to version 4.
 - PNG/TIFF/PDF/SVG use the shared scene with physical dimensions and background
   options. Vector atom rendering is retained; sphere occlusion remains approximate.
 - Annotations are a separate proposed feature; this extension does not implement them.
@@ -129,3 +129,12 @@ backend. Regenerate it, the studio screenshot and these examples with
 ![Nine Au particle constructions rendered from their actual atomic coordinates](images/nanoparticle-gallery.png)
 
 Reference: [ASE cluster and Wulff documentation](https://docs.ase-lib.org/ase/cluster/cluster.html).
+
+## Reference-inspired solid chiral models
+
+The two additional modes **Grooved cubic helicoid · 432 model** and **Fourfold ridged
+chiral nanorod** target grooved/ridged compact particles rather than mathematical
+ribbons or a strained rod lattice. See the dedicated [model guide](CHIRAL_MORPHOLOGIES.md)
+for controls, definitions, references, continuum-only operation, and limits. These
+are parametric approximations, not validated reconstructions of named experimental
+helicoids. Original ribbon/deformation modes remain available as distinct models.

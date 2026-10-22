@@ -88,3 +88,16 @@ and valid PDF/SVG outputs. Use temporary paths, never repository-root output fil
 Use Qt offscreen mode for suitable automated checks and manually inspect the actual
 desktop UI for interaction and platform rendering. Avoid brittle pixel-perfect
 assertions unless rendering conditions are controlled.
+
+## Chiral morphology models
+
+- Keep reference-inspired 432 grooved envelopes and fourfold ridged rods distinct
+  from validated experimental reconstructions and legacy ribbon/lattice-twist models.
+  Record the actual envelope equations and geometric handedness; do not infer a
+  D/L-ligand assignment, growth mechanism, strain or optical response.
+- Continuum-only projects have a validated surface mesh and zero generated atoms.
+  Never add proxy atoms, report a downsampled count as physical, or enable site
+  composition without ASE sites. Uniform surface color is not an alloy composition map.
+- Surface/atom representations share coordinates, camera and export devices. Preserve
+  vector surface triangles in SVG/PDF. Verify mesh closure, symmetry/mirror behavior,
+  undeformed lattice filling, persistence, alpha and final visual output.

@@ -15,7 +15,10 @@ Style the atoms and camera, then export PNG, TIFF, PDF, or SVG figures.
   editable lattice parameters, in-plane repetitions, thickness, and vacuum.
 - **Nanoparticle studio:** cubes with {100} faces, octahedra, cuboctahedra,
   custom facets and Wulff constructions; spheres, ellipsoids, rods, triangular/hexagonal
-  plates, twisted rods and lattice-cut helicoidal ribbons. Preview counts and sizes
+  plates, twisted rods and lattice-cut helicoidal ribbons. New reference-inspired
+  **432 grooved cubic models and fourfold ridged nanorods** have solid-surface and
+  optional ASE atom views, mirror partners and adjustable grooves/ridges.
+  Large continuum models contain no implied atom count. Preview counts and sizes
   before use. Chiral shapes are explicit, unrelaxed geometry models.
 - **Composition editing:** single elements, reproducible random alloys, selected
   sites, and layer-by-layer assignments, with exact integer counts and undo/redo.
@@ -88,6 +91,19 @@ See the [shape gallery, facet conventions and model limits](docs/NANOPARTICLES.m
 
 Regenerate particle screenshots and examples with [this script](tools/capture_particles.py).
 
+### Grooved and ridged chiral morphology models
+
+These solid surfaces approximate the morphology of grooved cubic helicoids and
+fourfold ridged nanorods; they are **not validated experimental reconstructions**.
+ASE filling preserves an undeformed FCC lattice at tractable sizes. A continuum-only
+mode handles larger shapes without generating or implying atoms.
+
+![Grooved cubic mirror partners and ridged nanorod variants](docs/images/chiral-morphology-gallery.png)
+
+See [Chiral morphology models](docs/CHIRAL_MORPHOLOGIES.md) for equations, controls,
+references, representation/export behavior and limits.
+
+
 ## First workflow
 
 1. Start with the default Pt FCC (100) slab or edit the Structure recipe, then Generate.
@@ -110,7 +126,7 @@ crystal and shape, build a preview, then **Use nanoparticle**. An Au FCC cube ha
 source; defaults are illustrative. Twisted rods strain a lattice, while helicoidal
 ribbons cut an undeformed lattice. These constructions do not predict growth or
 relaxed chiral structures. The [nanoparticle guide](docs/NANOPARTICLES.md) explains
-all 13 modes, dimensions, orientation and handedness.
+all 15 modes, dimensions, orientation and handedness.
 
 ## Example projects
 

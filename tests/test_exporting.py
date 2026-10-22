@@ -103,3 +103,33 @@ def test_particle_figures_keep_dimensions_alpha_and_vectors(qapp, tmp_path, shap
         root = ET.parse(path).getroot()
         assert not any(node.tag.endswith("image") for node in root.iter())
         assert "Au" in {node.text for node in root.iter() if node.tag.endswith("text")}
+
+
+@pytest.mark.parametrize("shape", ["helicoid_iii", "chiral_rod"])
+@pytest.mark.parametrize("format", ["PNG", "TIFF", "PDF", "SVG"])
+def test_solid_morphology_exports_vector_triangles_and_alpha(qapp, tmp_path, shape, format):
+    from surfaces.model import ParticleSpec
+
+    p = build_project(
+        StructureSpec(
+            element="Au",
+            a=4.08,
+            particle=ParticleSpec(shape=shape, atomistic=False, twist=45, mesh_resolution=32),
+        )
+    )
+    settings = ExportSettings(format=format, width=420, height=420, transparent=True)
+    path = tmp_path / f"solid.{format.lower()}"
+    export_figure(p, settings, path)
+    if format in ("PNG", "TIFF"):
+        with Image.open(path) as image:
+            assert image.size == (420, 420)
+            assert image.getchannel("A").getextrema() == (0, 255)
+            assert image.getpixel((0, 0))[3] == 0
+    elif format == "SVG":
+        root = ET.parse(path).getroot()
+        assert not any(node.tag.endswith("image") for node in root.iter())
+        assert sum(node.tag.endswith(("polygon", "path")) for node in root.iter()) > 100
+    else:
+        page = PdfReader(path).pages[0]
+        assert not list(page.images)
+        assert float(page.mediabox.width) == pytest.approx(420 / 300 * 72, abs=1)

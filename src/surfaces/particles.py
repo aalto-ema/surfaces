@@ -18,6 +18,8 @@ from surfaces.model import MAX_PHYSICAL_ATOMS, ParticleSpec, StructureSpec
 
 MAX_CANDIDATES = 250_000
 SHAPES = {
+    "helicoid_iii": "Grooved cubic helicoid · 432 model",
+    "chiral_rod": "Fourfold ridged chiral nanorod",
     "cube": "Cube · {100}",
     "octahedron": "Octahedron · {111}",
     "cuboctahedron": "Cuboctahedron · {100} + {111}",
@@ -68,7 +70,12 @@ def validate_particle(spec: StructureSpec) -> None:
     if p.shape not in SHAPES:
         raise ValueError("Unknown nanoparticle shape.")
     for name in ("width", "length", "thickness"):
-        _number(getattr(p, name), 0.1, 500, f"{name.capitalize()} (Å)")
+        _number(
+            getattr(p, name),
+            0.1,
+            5000 if p.shape in ("helicoid_iii", "chiral_rod") else 500,
+            f"{name.capitalize()} (Å)",
+        )
     _number(p.twist, -360, 360, "Total twist (degrees)")
     if p.axis not in ("001", "110", "111"):
         raise ValueError("Choose a parent [001], [110] or [111] particle axis.")
@@ -112,6 +119,31 @@ def validate_particle(spec: StructureSpec) -> None:
         energies = [row["energy"] for row in p.facets]
         if max(energies) / min(energies) > 20:
             raise ValueError("Surface-energy ratios above 20 are outside the bounded builder.")
+    for name, low, high in [
+        ("gap_depth", 0.05, 0.40),
+        ("gap_width", 0.03, 0.25),
+        ("groove_angle", 5, 60),
+        ("ridge_height", 0.05, 0.45),
+        ("ridge_width", 0.15, 0.8),
+        ("cap_fraction", 0.05, 0.3),
+    ]:
+        _number(getattr(p, name), low, high, name)
+    if type(p.handedness) is not int or p.handedness not in (-1, 1):
+        raise ValueError("Handedness must be +1 or −1.")
+    if type(p.atomistic) is not bool or type(p.crossed_ridges) is not bool:
+        raise ValueError("Atomistic and crossed-ridge settings must be booleans.")
+    if type(p.mesh_resolution) is not int or not 32 <= p.mesh_resolution <= 80:
+        raise ValueError("Surface resolution must be an integer between 32 and 80.")
+    if p.shape in ("helicoid_iii", "chiral_rod"):
+        if spec.crystal != "fcc" or p.axis != "001":
+            raise ValueError(
+                "Reference-inspired chiral models use an FCC parent with [001] along z."
+            )
+        if p.shape == "chiral_rod" and (p.length < p.width or not 5 <= p.twist <= 120):
+            raise ValueError(
+                "Ridged rods need length ≥ width and a ridge rotation of 5–120°. "
+                "Use handedness to reverse sign."
+            )
     if p.shape in ("twisted_rod", "helicoid"):
         if abs(p.twist) < 1:
             raise ValueError("Chiral constructions need a signed twist of at least 1°.")
@@ -265,6 +297,10 @@ def build_particle(spec: StructureSpec):
 
     validate_particle(spec)
     p = spec.particle
+    if p.shape in ("helicoid_iii", "chiral_rod"):
+        from surfaces.morphology import build_morphology
+
+        return build_morphology(spec)
     atoms, info = _faceted(spec) if p.shape in FACET_SHAPES else _envelope(spec)
     validate_atoms(atoms)
     nn = spec.a * {"fcc": 1 / np.sqrt(2), "bcc": np.sqrt(3) / 2, "sc": 1}[spec.crystal]

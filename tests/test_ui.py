@@ -305,3 +305,51 @@ def test_particle_wulff_invalid_input_is_inline(window, qtbot):
     assert not dialog.use_button.isEnabled()
     assert dialog.tasks.thread is None
     dialog.reject()
+
+
+def test_chiral_studio_continuum_and_atom_representation(window, qtbot):
+    from surfaces.particle_ui import ParticleDialog
+
+    dialog = ParticleDialog(window)
+    qtbot.addWidget(dialog)
+    dialog.show()
+    qtbot.waitUntil(lambda: dialog.tasks.thread is None, timeout=10000)
+    dialog.shape.setCurrentIndex(dialog.shape.findData("helicoid_iii"))
+    dialog.mesh_resolution.setValue(32)
+    dialog.atomistic.setChecked(False)
+    dialog.width.setValue(1200)
+    dialog.build_preview()
+    qtbot.waitUntil(lambda: dialog.tasks.thread is None, timeout=20000)
+    assert dialog.use_button.isEnabled(), dialog.error.text()
+    assert "continuum only" in dialog.summary.text()
+    assert not len(dialog.project.atoms)
+    dialog.style.setCurrentIndex(1)
+    assert dialog.style.currentIndex() == 0
+    assert "No ASE atoms" in dialog.error.text()
+    dialog.accept()
+    window.replace_generated(dialog.project)
+    assert not window.tabs.widget(1).isEnabled()
+    assert not window.appearance_panel.representation.isEnabled()
+    assert "Continuum" in window.statusBar().currentMessage()
+    window.undo()
+    assert window.tabs.widget(1).isEnabled()
+    assert window.project.mesh is None
+
+
+def test_chiral_rod_preview_switch_preserves_geometry(window, qtbot):
+    from surfaces.particle_ui import ParticleDialog
+
+    dialog = ParticleDialog(window)
+    qtbot.addWidget(dialog)
+    qtbot.waitUntil(lambda: dialog.tasks.thread is None, timeout=10000)
+    dialog.shape.setCurrentIndex(dialog.shape.findData("chiral_rod"))
+    dialog.mesh_resolution.setValue(32)
+    dialog.build_preview()
+    qtbot.waitUntil(lambda: dialog.tasks.thread is None, timeout=20000)
+    original = dialog.project.atoms.positions.copy()
+    dialog.style.setCurrentIndex(1)
+    assert dialog.project.appearance.render_style == "atoms"
+    dialog.style.setCurrentIndex(0)
+    assert dialog.project.appearance.render_style == "surface"
+    np.testing.assert_array_equal(dialog.project.atoms.positions, original)
+    dialog.reject()

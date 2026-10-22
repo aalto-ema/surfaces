@@ -70,6 +70,21 @@ class ParticleDialog(QDialog):
         self.axis = QComboBox()
         self.axis.addItems(["001", "110", "111"])
         self.twist = decimal(120, -360, 360, "°", 1)
+        self.gap_depth = decimal(0.28, 0.05, 0.40, " × edge", 3)
+        self.gap_width = decimal(0.10, 0.03, 0.25, " × edge", 3)
+        self.groove_angle = decimal(35, 5, 60, "°", 1)
+        self.ridge_height = decimal(0.28, 0.05, 0.45, " × radius", 3)
+        self.ridge_width = decimal(0.35, 0.15, 0.8, " rad", 3)
+        self.cap_fraction = decimal(0.14, 0.05, 0.3, " × length", 3)
+        self.handedness = QComboBox()
+        self.handedness.addItem("+ · geometric hand", 1)
+        self.handedness.addItem("− · mirror partner", -1)
+        self.crossed_ridges = QCheckBox("Mirror-symmetric crossed ridges")
+        self.atomistic = QCheckBox("Build ASE atoms (size limited)")
+        self.atomistic.setChecked(True)
+        self.mesh_resolution = integer(48, 32, 80)
+        self.style = QComboBox()
+        self.style.addItems(["Solid surface", "ASE atoms"])
         self.target = integer(1000, 1, 20000)
         self.rounding = QComboBox()
         self.rounding.addItems(["closest", "above", "below"])
@@ -92,18 +107,40 @@ class ParticleDialog(QDialog):
             ("Thickness", self.thickness),
             ("Parent direction along z", self.axis),
             ("Signed total twist", self.twist),
+            ("Groove depth", self.gap_depth),
+            ("Groove width", self.gap_width),
+            ("Groove inclination", self.groove_angle),
+            ("Ridge prominence", self.ridge_height),
+            ("Ridge angular width", self.ridge_width),
+            ("End-cap fraction", self.cap_fraction),
+            ("Geometric handedness", self.handedness),
+            ("", self.crossed_ridges),
+            ("", self.atomistic),
+            ("Surface resolution", self.mesh_resolution),
+            ("Preview style", self.style),
             ("Target atoms", self.target),
             ("Size rounding", self.rounding),
             ("Energy units", self.unit),
             ("Energy source / assumptions", self.energy_source),
             ("", self.illustrative),
         ]:
-            form.addRow(label, widget)
-        for widget in (self.crystal, self.shape, self.axis, self.rounding, self.unit):
+            if label:
+                form.addRow(label, widget)
+            else:
+                form.addRow(widget)
+        for widget in (
+            self.crystal,
+            self.shape,
+            self.axis,
+            self.rounding,
+            self.unit,
+            self.handedness,
+            self.style,
+        ):
             widget.setSizeAdjustPolicy(
                 QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon
             )
-            widget.setMinimumContentsLength(10)
+            widget.setMinimumContentsLength(9)
             widget.setMinimumWidth(0)
             widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         for row in range(form.rowCount()):
@@ -203,6 +240,20 @@ class ParticleDialog(QDialog):
         for widget in (self.crystal, self.axis, self.rounding, self.unit):
             widget.currentIndexChanged.connect(self.invalidate)
         self.illustrative.toggled.connect(self.invalidate)
+        for widget in (self.atomistic, self.crossed_ridges):
+            widget.toggled.connect(self.invalidate)
+        for widget in (
+            self.gap_depth,
+            self.gap_width,
+            self.groove_angle,
+            self.ridge_height,
+            self.ridge_width,
+            self.cap_fraction,
+            self.mesh_resolution,
+        ):
+            widget.valueChanged.connect(self.invalidate)
+        self.handedness.currentIndexChanged.connect(self.invalidate)
+        self.style.currentIndexChanged.connect(self.set_preview_style)
         self.table.itemChanged.connect(self.invalidate)
         self.shape.currentIndexChanged.connect(self.shape_changed)
         self.update_fields()
@@ -237,6 +288,23 @@ class ParticleDialog(QDialog):
         self.unit.setCurrentText(p.energy_unit)
         self.energy_source.setText(p.energy_source)
         self.illustrative.setChecked(p.illustrative)
+        self.width.setMaximum(5000)
+        self.length.setMaximum(5000)
+        self.width.setValue(p.width)
+        self.length.setValue(p.length)
+        for name in (
+            "gap_depth",
+            "gap_width",
+            "groove_angle",
+            "ridge_height",
+            "ridge_width",
+            "cap_fraction",
+            "mesh_resolution",
+        ):
+            getattr(self, name).setValue(getattr(p, name))
+        self.handedness.setCurrentIndex(0 if p.handedness == 1 else 1)
+        self.crossed_ridges.setChecked(p.crossed_ridges)
+        self.atomistic.setChecked(p.atomistic)
         for row in p.facets:
             self.add_facet(row["miller"], row["layers"], row["energy"])
 
@@ -255,7 +323,26 @@ class ParticleDialog(QDialog):
         self.use_button.setEnabled(False)
         self.summary.setText("Recipe changed · build a new preview before using this particle.")
 
+    def set_preview_style(self):
+        if not self.project or self.project.mesh is None:
+            return
+        if self.style.currentIndex() == 1 and not len(self.project.atoms):
+            self.style.setCurrentIndex(0)
+            self.error.setText(
+                "No ASE atoms in this continuum model. Enable atom filling and "
+                "rebuild at a tractable size."
+            )
+            return
+        self.project.appearance.render_style = (
+            "surface" if self.style.currentIndex() == 0 else "atoms"
+        )
+        self.viewport.update()
+
     def shape_changed(self):
+        if self.shape.currentData() in ("helicoid_iii", "chiral_rod"):
+            self.axis.setCurrentText("001")
+            self.crystal.setCurrentText("fcc")
+            self.twist.setValue(45)
         if self.shape.currentData() in ("triangle", "hexagon"):
             self.axis.setCurrentText("111")
         self.update_fields()
@@ -265,13 +352,33 @@ class ParticleDialog(QDialog):
         shape = self.shape.currentData()
         faceted = shape in FACET_SHAPES
         wulff = shape == "wulff"
+        morph = shape in ("helicoid_iii", "chiral_rod")
+        self.width.setMaximum(5000 if morph else 500)
+        self.length.setMaximum(5000 if morph else 500)
         for widget, visible in [
             (self.shells, shape in ("cube", "octahedron", "cuboctahedron")),
             (self.width, not faceted),
-            (self.length, not faceted and shape not in ("sphere", "triangle", "hexagon")),
-            (self.thickness, not faceted and shape not in ("sphere", "rod")),
-            (self.axis, not faceted),
-            (self.twist, shape in ("twisted_rod", "helicoid")),
+            (
+                self.length,
+                not faceted and shape not in ("sphere", "triangle", "hexagon", "helicoid_iii"),
+            ),
+            (
+                self.thickness,
+                not faceted and shape not in ("sphere", "rod", "helicoid_iii", "chiral_rod"),
+            ),
+            (self.axis, not faceted and not morph),
+            (self.twist, shape in ("twisted_rod", "helicoid", "chiral_rod")),
+            (self.gap_depth, shape == "helicoid_iii"),
+            (self.gap_width, shape == "helicoid_iii"),
+            (self.groove_angle, shape == "helicoid_iii"),
+            (self.ridge_height, shape == "chiral_rod"),
+            (self.ridge_width, shape == "chiral_rod"),
+            (self.cap_fraction, shape == "chiral_rod"),
+            (self.crossed_ridges, shape == "chiral_rod"),
+            (self.handedness, morph),
+            (self.atomistic, morph),
+            (self.mesh_resolution, morph),
+            (self.style, morph),
             (self.target, wulff),
             (self.rounding, wulff),
             (self.unit, wulff),
@@ -283,6 +390,21 @@ class ParticleDialog(QDialog):
         self.table.setColumnHidden(1, wulff)
         self.table.setColumnHidden(2, not wulff)
         notes = {
+            "helicoid_iii": (
+                "Reference-inspired 432 model: solid cube with inclined edge "
+                "grooves repeated by all 24 proper cubic rotations. This is a "
+                "tunable approximation, not a validated Helicoid III "
+                "reconstruction. Width is cube edge. Handedness has no automatic "
+                "L/D ligand assignment. Disable ASE atoms for large continuum "
+                "models."
+            ),
+            "chiral_rod": (
+                "Solid core with four tilted ridges and tapered end caps, not a "
+                "twisted atomic lattice. Width is outer diameter; length is along "
+                "parent [001]. Reference-inspired 422 model; crossed ridges "
+                "provide a mirror-symmetric geometric variant. Disable ASE atoms "
+                "for large continuum models."
+            ),
             "cube": (
                 "Six {100} faces, e.g. an Au cube with Au(100) faces. Layer count "
                 "is center-to-face, not total thickness."
@@ -384,6 +506,16 @@ class ParticleDialog(QDialog):
             energy_source=self.energy_source.text().strip(),
             illustrative=self.illustrative.isChecked(),
             facets=rows,
+            gap_depth=self.gap_depth.value(),
+            gap_width=self.gap_width.value(),
+            groove_angle=self.groove_angle.value(),
+            ridge_height=self.ridge_height.value(),
+            ridge_width=self.ridge_width.value(),
+            cap_fraction=self.cap_fraction.value(),
+            handedness=self.handedness.currentData(),
+            crossed_ridges=self.crossed_ridges.isChecked(),
+            atomistic=self.atomistic.isChecked(),
+            mesh_resolution=self.mesh_resolution.value(),
         )
         spec = StructureSpec(
             element=self.element.text().strip(),
@@ -416,7 +548,9 @@ class ParticleDialog(QDialog):
         self.project = project
         self.viewport.project = project
         self.viewport.fit()
-        dims = np.ptp(project.atoms.positions, axis=0)
+        dims = np.ptp(
+            project.mesh.vertices if project.mesh is not None else project.atoms.positions, axis=0
+        )
         p = project.spec.particle
         count = f"{len(project.atoms):,} atoms"
         if p.shape == "wulff":
@@ -433,6 +567,25 @@ class ParticleDialog(QDialog):
             "Ideal geometry · unrelaxed"
             + (" · illustrative energies" if p.shape == "wulff" and p.illustrative else "")
         )
+        if project.mesh is not None:
+            self.style.blockSignals(True)
+            self.style.setCurrentIndex(0)
+            self.style.blockSignals(False)
+            count = f"{len(project.mesh.faces):,} surface triangles"
+            count += (
+                f" · {len(project.atoms):,} ASE atoms"
+                if len(project.atoms)
+                else " · continuum only, no atoms"
+            )
+            self.summary.setText(
+                count
+                + "\nSurface spans: "
+                + " × ".join(f"{v:.2f}" for v in dims)
+                + " Å\nSurface color is uniform; use atom view for site composition."
+            )
+            self.error.setText(
+                "Reference-inspired geometry · not a validated experimental reconstruction"
+            )
         self.valid = True
 
     def set_status_error(self, is_error):

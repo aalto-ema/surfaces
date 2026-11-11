@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Standalone Windows x64 installer built and smoke-tested by GitHub Actions.
+
 - Reference-inspired 432 grooved cubic morphology and fourfold ridged nanorods,
   including mirror partners and a mirror-symmetric crossed-ridge option.
 - Shared vector surface rendering, optional undeformed ASE filling, and explicit

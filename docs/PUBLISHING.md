@@ -1,9 +1,10 @@
 # Publishing this repository on GitHub
 
 This checkout is prepared for a public **source repository**. It includes source,
-tests, scientific model documentation, five example projects, two screenshots,
+tests, scientific model documentation, example projects and screenshots,
 an MIT license, contributor guidance, issue/PR templates, and GitHub Actions checks.
-It does not include a virtual environment or prebuilt desktop installers.
+Build outputs and virtual environments are not committed. Windows installers are
+built and uploaded by the [installer workflow](WINDOWS_INSTALLER.md).
 The public repository is [aalto-ema/surfaces](https://github.com/aalto-ema/surfaces).
 
 ## Before the first upload
@@ -11,7 +12,7 @@ The public repository is [aalto-ema/surfaces](https://github.com/aalto-ema/surfa
 1. Inspect `git status --short` and the staged diff. The allowlisted source files,
    examples, and screenshots should be present. Environments, caches, build outputs,
    logs, credentials, and personal project files belong outside the upload.
-2. Review the two README PNGs. They were captured from app windows and public examples,
+2. Review the README screenshots. They were captured from app windows and public examples,
    without unrelated desktop content. Keep their relative paths and filenames intact.
 3. The MIT notice currently credits **Surfaces contributors**. Adjust that attribution
    if the project owner wants a different public copyright notice.
@@ -45,8 +46,8 @@ Skip adding the remote if `origin` is already configured correctly.
   Linux, macOS, and Windows, plus a wheel/source build. Local validation does not
   replace seeing the first hosted CI result.
 - Keep the repository and issue URLs in `pyproject.toml` current if the repository moves.
-- Add a GitHub release/tag when appropriate. A source release is separate from
-  uploading to PyPI or building signed desktop installers; neither is automated here.
+- Add a GitHub release/tag when appropriate. If attaching an installer, use a verified build from the release commit and include
+  the checksum. Release publishing, PyPI uploads, and code signing are not automated.
 
 ## Distribution checks
 

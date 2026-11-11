@@ -123,3 +123,17 @@ boundary. Full-size continuum particles have no surrogate or downsampled atoms.
 Version 4 persists both representations explicitly. Uniform material color on the
 surface does not represent an alloy's local site occupations. Keep all exports on
 the shared vector drawing path and disclose painter visibility/mesh approximations.
+
+
+## Windows packaging
+
+Build on a native x64 Windows Actions runner. PyInstaller bundles the existing
+PySide6 entry point, Python runtime and scientific packages as a directory;
+Inno Setup wraps it in a per-user installer with shortcuts and uninstall support.
+Keeping the runtime files outside the executable archive permits replacing the
+Qt libraries and makes the installation easier to inspect. The installer includes
+dependency notices and exact upstream Qt/PySide/Python source references.
+
+Verify the installed executable outside the checkout before publishing the
+workflow artifact. The workflow publishes an unsigned installer and SHA-256
+checksum as a time-limited artifact without GitHub release write permissions.

@@ -34,9 +34,19 @@ Style the atoms and camera, then export PNG, TIFF, PDF, or SVG figures.
 
 ## Installation
 
+### Windows installer
+
+On 64-bit Windows, open a successful run of the [Windows installer workflow](https://github.com/aalto-ema/surfaces/actions/workflows/windows-installer.yml).
+Sign in to GitHub, download the **Surfaces-Windows-x64** artifact, extract the ZIP,
+and run `Surfaces-<version>-windows-x64-setup.exe`. The installer bundles Python
+and the app dependencies, installs for your account, and adds Surfaces to Start.
+The build is unsigned. See the [installer guide](docs/WINDOWS_INSTALLER.md) for
+checksum verification, uninstalling, and rebuilding.
+
+### Install from source
+
 Use **Python 3.11 or newer** and a graphical desktop. Download or clone this
 repository, open a terminal in its root folder, and create a virtual environment.
-There are currently no prebuilt application installers or public PyPI release.
 
 ### macOS / Linux
 
@@ -60,8 +70,8 @@ path. If the current Python is missing dependencies, it tries the checkout's loc
 `.venv`. Installing the package provides a `surfaces` console command as well.
 
 Native use has been inspected on macOS. GitHub Actions is configured for headless
-checks on Linux, macOS, and Windows; native Windows/Linux interaction and installers
-have not yet been verified.
+checks on Linux, macOS, and Windows. The installer workflow separately checks
+startup on a Windows x64 runner.
 
 ## Screenshots
 
@@ -209,5 +219,5 @@ Further project notes: [coding guidance](AGENTS.md), [product](docs/PRODUCT.md),
 ## License
 
 Surfaces is released under the [MIT License](LICENSE). Dependencies retain their
-own licenses and are installed separately; their source and binaries are not
-vendored in this repository.
+own licenses. Source installs resolve them separately; the Windows installer
+bundles the runtime and includes third-party notices.

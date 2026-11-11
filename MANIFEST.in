@@ -5,6 +5,7 @@ recursive-include docs *.md *.png
 recursive-include examples *.surfaces.json
 recursive-include tests *.py
 recursive-include tools *.py
+recursive-include packaging/windows *.py *.ps1 *.iss *.txt
 recursive-include .github *.yml *.yaml *.md
 prune .venv
 prune .pytest_cache

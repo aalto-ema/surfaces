@@ -12,6 +12,7 @@ def collect(bundle: Path) -> None:
     directory = bundle / "licenses"
     directory.mkdir()
     shutil.copy2("LICENSE", directory / "Surfaces.txt")
+    shutil.copytree(Path(__file__).with_name("licenses"), directory / "Qt")
     for candidate in ("LICENSE.txt", "LICENSE"):
         python_license = Path(sys.base_prefix) / candidate
         if python_license.is_file():
@@ -40,7 +41,7 @@ def collect(bundle: Path) -> None:
     python = ".".join(map(str, sys.version_info[:3]))
     (bundle / "THIRD-PARTY-NOTICES.txt").write_text(
         "Surfaces is MIT-licensed. See the licenses folder for component notices.\n"
-        "Qt is used through the open-source Qt for Python distribution.\n"
+        "Qt, PySide6 and Shiboken are used under LGPL-3.0; see licenses/Qt.\n"
         "Qt DLLs and plugins are installed as separate, replaceable files. You may\n"
         "replace them with ABI-compatible builds and debug your modifications.\n"
         "The PySide6 modules are installed outside the executable archive.\n\n"
@@ -49,6 +50,7 @@ def collect(bundle: Path) -> None:
         f"PySide6 and Shiboken {pyside} corresponding source (upstream):\n"
         f"https://download.qt.io/official_releases/QtForPython/pyside6/PySide6-{pyside}-src/\n"
         f"Python {python} source: https://www.python.org/ftp/python/{python}/\n"
+        "Qt component notices: https://doc.qt.io/qt-6/licenses-used-in-qt.html\n"
         "Surfaces source: https://github.com/aalto-ema/surfaces\n\n"
         "Build environment packages (includes build tools):\n"
         + "\n".join(sorted(entries, key=str.casefold))

@@ -17,7 +17,7 @@ try {
         throw 'Inno Setup 6 was not found.'
     }
 
-    python -m PyInstaller --noconfirm --clean --onedir --windowed --noupx --noarchive `
+    python -m PyInstaller --noconfirm --clean --onedir --windowed --noupx --debug noarchive `
         --name Surfaces --icon NONE --specpath build --workpath build\pyinstaller `
         --collect-data ase --collect-submodules skimage.measure `
         --hidden-import ase.io.cif --hidden-import ase.io.extxyz --hidden-import ase.io.xyz `

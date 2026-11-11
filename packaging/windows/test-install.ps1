@@ -27,7 +27,14 @@ $app = Join-Path $destination 'Surfaces.exe'
 if (-not (Test-Path -LiteralPath (Join-Path $destination 'THIRD-PARTY-NOTICES.txt'))) {
     throw 'The installer omitted third-party notices.'
 }
-Invoke-CheckedProcess $app "--installer-smoke-test `"$report`"" 120
+$buildPath = $env:Path
+try {
+    $env:Path = "$env:SystemRoot\System32;$env:SystemRoot"
+    Invoke-CheckedProcess $app "--installer-smoke-test `"$report`"" 120
+}
+finally {
+    $env:Path = $buildPath
+}
 if ((Get-Content -LiteralPath $report -Raw).Trim() -ne 'OK') { throw 'Missing smoke-test result.' }
 
 $uninstaller = @(Get-ChildItem -LiteralPath $destination -Filter 'unins*.exe')
